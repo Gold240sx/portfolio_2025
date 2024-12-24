@@ -6,7 +6,7 @@ import { Toaster } from "@/components/shadcn/toaster"
 import { applicationName, appConfig } from "@/app-config"
 import { BreakpointOverlay } from "@/components/breakpoint-overlay"
 const { mode } = appConfig
-import "fumadocs-ui/style.css"
+// import "fumadocs-ui/style.css"
 import "@/styles/styles.css"
 import RoundedDrawerNav from "../components/layout/roundedDrawerNav"
 import SiteParams from "@/data/_SiteParams"

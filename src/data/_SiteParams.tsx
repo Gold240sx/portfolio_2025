@@ -4,7 +4,6 @@ import { AiFillInstagram } from "react-icons/ai"
 import { BsGithub, BsGoogle, BsMeta } from "react-icons/bs"
 import { ImLinkedin } from "react-icons/im"
 import { StaticImageData } from "next/image"
-import { F } from "node_modules/fumadocs-core/dist/page-tree-r8qjoUla"
 
 type SiteParamsType = {
 	title: string
