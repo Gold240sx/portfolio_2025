@@ -60,7 +60,7 @@ export default async function RootLayout({
 				<CSPostHogProvider>
 					{isUnderDevelopment && (
 						<div className="overflow-hidden h-screen w-full">
-							<FuzzyOverlay />
+							{/* <FuzzyOverlay /> */}
 							{children}
 						</div>
 					)}

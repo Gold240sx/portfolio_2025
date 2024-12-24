@@ -87,11 +87,11 @@ const Home: FC = () => {
 					<TooltipProvider>
 						<Tooltip delayDuration={400}>
 							<TooltipTrigger>
-								<button
+								<div
 									onClick={() => setIsOpen(true)}
 									className="mt-4 w-fit pointer-events-auto bg-white/50 hover:scale-125 hover:-translate-y-1.5 uppercase transition-all duration-150 ease-in text-black font-bold p-1.5 !rounded-[.8rem] overflow-hidden">
 									<BsFillGrid3X3GapFill className="text-4xl text-white" />
-								</button>
+								</div>
 							</TooltipTrigger>
 							<TooltipContent
 								className="dark rounded-[8px] py-2 text-lg tracking-wider text-white font-light border-black"
