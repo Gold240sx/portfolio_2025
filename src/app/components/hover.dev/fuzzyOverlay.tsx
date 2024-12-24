@@ -17,9 +17,8 @@ const FuzzyOverlay = () => {
 			}}
 			style={{
 				backgroundImage: 'url("/black-noise.png")',
-				opacity: 0.07,
 			}}
-			className="pointer-events-none absolute -inset-[100%] opacity-[15%]"
+			className="z-10 pointer-events-none absolute -inset-[100%] opacity-[4%]"
 		/>
 	)
 }

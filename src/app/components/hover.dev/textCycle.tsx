@@ -47,7 +47,7 @@ const TextCycle = ({
 								scale: 0,
 							},
 						}}
-						className="absolute left-1/2 top-0 w-full text-teal-50">
+						className="absolute left-1/2 top-0 w-full">
 						{phrase}
 					</motion.div>
 				)

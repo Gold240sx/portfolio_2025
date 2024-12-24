@@ -2,32 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-input[type='text'],
-input[type='password'],
-input[type='email'],
-input[type='number'],
-input[type='tel'],
-input[type='date'],
-input[type='time'],
-input[type='datetime-local'],
-input[type='month'],
-input[type='week'],
-input[type='search'],
-input[type='url'],
-input[type='color'],
-input[type='range'],
-input[type='file'],
-input[type='checkbox'],
-input[type='radio'],
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="search"],
+input[type="url"],
+input[type="color"],
+input[type="range"],
+input[type="file"],
+input[type="checkbox"],
+input[type="radio"],
 select,
 textarea {
-  @apply block w-full px-3 ease-in-out duration-200 transition-all py-2 text-base !rounded-lg text-gray-700 placeholder-gray-400 bg-white border border-gray-300 shadow-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
-  border-radius: 6px !important;
+	@apply block w-full px-3 ease-in-out duration-200 transition-all py-2 text-base !rounded-lg text-gray-700 placeholder-gray-400 bg-white border border-gray-300 shadow-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+	border-radius: 6px !important;
 }
 
 button {
-  @apply inline-flex items-center justify-center px-4 ease-in-out duration-200 transition-all py-2 text-base font-medium text-white bg-gradient-to-br from-sky-300 to-teal-600 border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:from-sky-400 hover:to-teal-700 sm:text-sm;
-  border-radius: 6px !important;
-  border-radius: 6px !important;
-  overflow: hidden !important;
+	@apply inline-flex items-center justify-center px-4 ease-in-out duration-200 transition-all py-2 text-base font-medium text-white border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:from-sky-400 hover:to-teal-700 sm:text-sm;
+	border-radius: 6px !important;
+	border-radius: 6px !important;
+	overflow: hidden !important;
 }
