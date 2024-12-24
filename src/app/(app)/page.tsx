@@ -25,7 +25,7 @@ const Home: FC = () => {
 
 	return (
 		<div className="flex flex-col h-full">
-			<NewsBanner
+			{/* <NewsBanner
 				props={{
 					newsBanner: {
 						newsBannerText:
@@ -36,15 +36,15 @@ const Home: FC = () => {
 						hiddenOnHome: false,
 					},
 				}}
-			/>
+			/> */}
 			<div className="relative h-full flex-col bg-neutral-950 text-white text-6xl font-semibold text-center place-items-center justify-center flex">
-				<Image
+				{/* <Image
 					alt="Main Logo"
 					className="animate-pulse w-48"
 					src={MainLogoInvert}
 					width={200}
 					height={200}
-				/>
+				/> */}
 				<div className="grid flex-wrap mt-10 z-50 cursor-pointer text-3xl text-zinc-600 space-y-3 pb-6">
 					<h2 className="hoverText text-center text-5xl font-thin text-teal-300 pb-2">
 						{"MichaelMartell.com".split("").map((child, idx) => (
