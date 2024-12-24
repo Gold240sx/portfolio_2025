@@ -1,0 +1,9 @@
+// DO NOT USE A "use client/server here"
+import { z } from 'zod'
+
+export const schema = z.object({
+  firstName: z.string().trim().min(2, { message: 'First name is required' }),
+  lastName: z.string().trim().min(2, { message: 'Last name is required' }),
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+})
