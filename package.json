@@ -15,7 +15,6 @@
 		"start": "cross-env NODE_OPTIONS=--no-deprecation next start",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"postinstall": "fumadocs-mdx",
 		"email": "email dev"
 	},
 	"dependencies": {
