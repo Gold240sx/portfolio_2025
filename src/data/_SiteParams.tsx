@@ -17,6 +17,7 @@ type SiteParamsType = {
 	googleReviewCount?: number
 	googleReviewLink?: string
 	devMode: boolean
+	isUnderDevelopment?: boolean
 	adminContext?: {
 		adminEmail?: string
 	}
@@ -58,6 +59,7 @@ const SiteParams: SiteParamsType = {
 	googleReviewCount: 225,
 	googleReviewLink: "https://g.co/kgs/MVWdAS1",
 	devMode: false,
+	isUnderDevelopment: true,
 	adminContext: {
 		adminEmail: "240designworks@gmail.com",
 	},

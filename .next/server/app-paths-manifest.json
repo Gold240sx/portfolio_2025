@@ -1,15 +1,3 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
-  "/api/test_api/route": "app/api/test_api/route.js",
-  "/api/supabase_cron_job/route": "app/api/supabase_cron_job/route.js",
-  "/(payload)/api/[...slug]/route": "app/(payload)/api/[...slug]/route.js",
-  "/(payload)/api/graphql/route": "app/(payload)/api/graphql/route.js",
-  "/(payload)/api/graphql-playground/route": "app/(payload)/api/graphql-playground/route.js",
-  "/my-route/route": "app/my-route/route.js",
-  "/api/sentry-example-api/route": "app/api/sentry-example-api/route.js",
-  "/(payload)/admin/[[...segments]]/page": "app/(payload)/admin/[[...segments]]/page.js",
-  "/sentry-example-page/page": "app/sentry-example-page/page.js",
-  "/(app)/page": "app/(app)/page.js",
-  "/(app)/sign-in/page": "app/(app)/sign-in/page.js",
-  "/(app)/(authenticated)/dashboard/page": "app/(app)/(authenticated)/dashboard/page.js"
+  "/(app)/page": "app/(app)/page.js"
 }
