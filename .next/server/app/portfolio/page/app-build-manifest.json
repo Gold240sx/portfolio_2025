@@ -1,0 +1,22 @@
+{
+  "pages": {
+    "/portfolio/page": [
+      "static/chunks/[root of the server]__1dcecb._.css",
+      "static/chunks/b744b_next_c93bc3._.js",
+      "static/chunks/4849d_framer-motion_dist_es_fe12c3._.js",
+      "static/chunks/node_modules__pnpm_46f405._.js",
+      "static/chunks/_7d23ce._.js",
+      "static/chunks/app_layout_tsx_0cc28e._.js",
+      "static/chunks/_b4a25d._.js",
+      "static/chunks/app_portfolio_page_tsx_196ded._.js",
+      "static/chunks/b744b_next_dist_compiled_react-dom_d27aab._.js",
+      "static/chunks/b744b_next_dist_compiled_faf856._.js",
+      "static/chunks/b744b_next_dist_client_62860f._.js",
+      "static/chunks/b744b_next_dist_d393bb._.js",
+      "static/chunks/90823_@swc_helpers_cjs_6ab2e1._.js",
+      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_202f55._.js",
+      "static/chunks/_c4c472._.js",
+      "static/chunks/_236b60._.js"
+    ]
+  }
+}
