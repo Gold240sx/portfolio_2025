@@ -1,6 +1,7 @@
 import { Link } from "lucide-react"
 import React from "react"
 import Marquee from "react-fast-marquee"
+import { motion } from "framer-motion"
 
 type NewsBannerType = {
 	props: {
@@ -70,9 +71,13 @@ const NewsBanner = ({ props }: NewsBannerType) => {
 	}
 
 	return (
-		<div className="h-fit bg-black flex w-full py-1 group">
+		<motion.div
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.5 }}
+			className="h-fit bg-black flex w-full py-1 group">
 			<div className="text-white py-10s w-full">{renderBanner()}</div>
-		</div>
+		</motion.div>
 	)
 }
 

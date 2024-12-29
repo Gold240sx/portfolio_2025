@@ -5,19 +5,23 @@ import TerminalHeader from "@/components/hover.dev/terminalContactForm"
 import TerminalBody from "@/components/hover.dev/terminalContactForm"
 import TerminalContact from "@/components/hover.dev/terminalContactForm"
 
+interface ModalProps {
+	isOpen: boolean
+	setIsOpen: (open: boolean) => void
+	onClose: () => void
+	isMinimized: boolean
+	setIsMinimized: (minimized: boolean) => void
+	launchpadButtonRef: React.MutableRefObject<HTMLButtonElement | null>
+}
+
 const Modal = ({
 	isOpen,
 	setIsOpen,
+	onClose,
 	isMinimized,
 	setIsMinimized,
-	onClose,
-}: {
-	isOpen: boolean
-	setIsOpen: Dispatch<SetStateAction<boolean>>
-	isMinimized: boolean
-	setIsMinimized: Dispatch<SetStateAction<boolean>>
-	onClose: () => void
-}) => {
+	launchpadButtonRef,
+}: ModalProps) => {
 	const containerRef = useRef<HTMLDivElement | null>(null)
 	const inputRef = useRef<HTMLInputElement | null>(null)
 	const [isMaximized, setIsMaximized] = useState(false)
@@ -49,6 +53,12 @@ const Modal = ({
 								setIsMaximized={setIsMaximized}
 								isMinimized={isMinimized}
 								setIsMinimized={setIsMinimized}
+								launchpadButtonRef={launchpadButtonRef}
+								onMinimize={() => {
+									setTimeout(() => {
+										launchpadButtonRef.current?.focus()
+									}, 100)
+								}}
 							/>
 						</div>
 					</motion.div>

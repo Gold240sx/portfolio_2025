@@ -9,6 +9,9 @@ import { withPayload } from "@payloadcms/next/withPayload"
 const nextConfig = {
 	images: { unoptimized: true },
 	reactStrictMode: true,
+	experimental: {
+		serverActions: true,
+	},
 }
 
 export default withSentryConfig(withPayload(nextConfig), {

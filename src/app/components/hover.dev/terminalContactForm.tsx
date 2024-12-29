@@ -18,17 +18,39 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { AiOutlineMinus } from "react-icons/ai"
 import { CgClose, CgExpand } from "react-icons/cg"
 import { TbFolderFilled } from "react-icons/tb"
+import { useToast } from "@/hooks/use-toast"
+import { submitContactForm } from "@/app/actions/contact"
 
 interface TerminalContactProps {
 	onClose: () => void
 	isMaximized: boolean
 	setIsMaximized: Dispatch<SetStateAction<boolean>>
 	isMinimized: boolean
-	setIsMinimized: Dispatch<SetStateAction<boolean>>
+	setIsMinimized: (minimized: boolean) => void
+	onMinimize: () => void
+	launchpadButtonRef: React.RefObject<HTMLButtonElement | null>
 }
 
+const nameValidation = z
+	.string()
+	.min(2, "Name must be at least 2 characters")
+	.regex(
+		/^[A-Za-z]+(\s+[A-Za-z]+)+$/,
+		"Please enter both first and last name"
+	)
+	.trim()
+	.transform((val) =>
+		val
+			.split(" ")
+			.map(
+				(word) =>
+					word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+			)
+			.join(" ")
+	)
+
 const formSchema = z.object({
-	name: z.string().min(2, "Name must be at least 2 characters").trim(),
+	name: nameValidation,
 	email: z.string().email("Invalid email address").trim(),
 	message: z
 		.string()
@@ -44,6 +66,8 @@ const TerminalContact = ({
 	setIsMaximized,
 	isMinimized,
 	setIsMinimized,
+	onMinimize,
+	launchpadButtonRef,
 }: TerminalContactProps) => {
 	const containerRef = useRef<HTMLDivElement | null>(null)
 	const inputRef = useRef<HTMLInputElement | null>(null)
@@ -57,14 +81,25 @@ const TerminalContact = ({
 		mode: "onChange",
 	})
 
-	const handleSend = handleSubmit((data) => {
-		console.log(data)
-		// setComplete(true)
-	})
+	const [questions, setQuestions] = useState(QUESTIONS)
 
-	const handleQuestionChange = async (key: string, value: string) => {
-		setValue(key as keyof FormValues, value.trim())
-		await trigger(key as keyof FormValues)
+	useEffect(() => {
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				setIsMinimized(true)
+				onClose()
+			}
+		}
+
+		window.addEventListener("keydown", handleEscape)
+		return () => window.removeEventListener("keydown", handleEscape)
+	}, [setIsMinimized, onClose])
+
+	const handleClose = () => {
+		setQuestions(
+			QUESTIONS.map((q) => ({ ...q, complete: false, value: "" }))
+		)
+		onClose()
 	}
 
 	return (
@@ -81,11 +116,17 @@ const TerminalContact = ({
 				}}
 				className={`${isMaximized ? "h-full w-auto m-4 lg:m-8" : "h-96 max-w-4xl "} bg-neutral-950/70 rounded-b-xl overflow-hidden backdrop-blur rounded-lg w-full mx-auto overflow-y-scroll shadow-2xl shadow-black/50 cursor-text font-mono`}>
 				<TerminalHeader
-					onClose={onClose}
+					onClose={handleClose}
 					setIsMaximized={setIsMaximized}
 					setIsMinimized={setIsMinimized}
+					onMinimize={onMinimize}
 				/>
-				<TerminalBody inputRef={inputRef} containerRef={containerRef} />
+				<TerminalBody
+					inputRef={inputRef}
+					containerRef={containerRef}
+					onClose={onClose}
+					onMinimize={onMinimize}
+				/>
 			</div>
 		</section>
 	)
@@ -95,10 +136,12 @@ const TerminalHeader = ({
 	onClose,
 	setIsMaximized,
 	setIsMinimized,
+	onMinimize,
 }: {
 	onClose: () => void
 	setIsMaximized: Dispatch<SetStateAction<boolean>>
-	setIsMinimized: Dispatch<SetStateAction<boolean>>
+	setIsMinimized: (minimized: boolean) => void
+	onMinimize: () => void
 }) => {
 	// Memoize handlers
 	const handleClose = useCallback(() => {
@@ -110,7 +153,8 @@ const TerminalHeader = ({
 	const handleMinimize = useCallback(() => {
 		setIsMinimized(true)
 		onClose()
-	}, [setIsMinimized, onClose])
+		onMinimize()
+	}, [setIsMinimized, onClose, onMinimize])
 
 	const handleMaximize = useCallback(() => {
 		setIsMaximized(true)
@@ -145,31 +189,47 @@ const TerminalHeader = ({
 	)
 }
 
-const TerminalBody = ({ containerRef, inputRef }: TerminalBodyProps) => {
+const TerminalBody = ({
+	containerRef,
+	inputRef,
+	onClose,
+	onMinimize,
+}: TerminalBodyProps) => {
 	const [focused, setFocused] = useState(false)
 	const [text, setText] = useState("")
 
 	const [questions, setQuestions] = useState(QUESTIONS)
 
 	const curQuestion = questions.find((q) => !q.complete)
+	const handleSubmitLine = (value: string, currentQuestion: QuestionType) => {
+		const validationResult = currentQuestion.validation.safeParse(value)
 
-	const handleSubmitLine = (value: string) => {
-		// check if there are any errors with the current question first and if there are, don't proceed and display the error
-		if (curQuestion) {
-			setQuestions((pv) =>
-				pv.map((q) => {
-					if (q.key === curQuestion.key) {
-						return {
-							...q,
-							complete: true,
-							value,
-						}
-					}
-					return q
-				})
-			)
+		if (!validationResult.success) {
+			// Handle error - you might want to show it in the UI
+			return false
 		}
+
+		// Proceed with existing submission logic
+		const updatedQuestions = questions.map((q) => {
+			if (q.key === currentQuestion.key) {
+				return { ...q, complete: true, value }
+			}
+			return q
+		})
+
+		setQuestions(updatedQuestions)
+		setText("")
+		return true
 	}
+
+	useEffect(() => {
+		if (containerRef.current) {
+			containerRef.current.scrollTo({
+				top: containerRef.current.scrollHeight,
+				behavior: "smooth",
+			})
+		}
+	}, [questions])
 
 	return (
 		<div className="p-6 text-slate-100 text-lg">
@@ -186,9 +246,16 @@ const TerminalBody = ({ containerRef, inputRef }: TerminalBodyProps) => {
 					command={curQuestion?.key || ""}
 					handleSubmitLine={handleSubmitLine}
 					containerRef={containerRef}
+					currentQuestion={curQuestion}
+					questions={questions}
+					setQuestions={setQuestions}
 				/>
 			) : (
-				<Summary questions={questions} setQuestions={setQuestions} />
+				<Summary
+					questions={questions}
+					setQuestions={setQuestions}
+					onClose={onClose}
+				/>
 			)}
 		</div>
 	)
@@ -246,8 +313,17 @@ const CurrentQuestion = ({ curQuestion }: CurrentQuestionProps) => {
 	)
 }
 
-const Summary = ({ questions, setQuestions }: SummaryProps) => {
+const Summary = ({ questions, setQuestions, onClose }: SummaryProps) => {
 	const [complete, setComplete] = useState(false)
+	const [error, setError] = useState<string | null>(null)
+	const { toast } = useToast()
+	const sendButtonRef = useRef<HTMLButtonElement>(null)
+
+	useEffect(() => {
+		if (!complete && sendButtonRef.current) {
+			sendButtonRef.current.focus()
+		}
+	}, [complete])
 
 	const handleReset = () => {
 		setQuestions((pv) =>
@@ -255,14 +331,51 @@ const Summary = ({ questions, setQuestions }: SummaryProps) => {
 		)
 	}
 
-	const handleSend = () => {
-		const formData = questions.reduce((acc, val) => {
-			return { ...acc, [val.key]: val.value }
-		}, {})
+	const handleSend = async () => {
+		try {
+			const formData = questions.reduce<Record<string, string>>(
+				(acc, val) => ({ ...acc, [val.key]: val.value }),
+				{}
+			)
 
-		// Send this data to your server or whatever :)
-		console.log(formData)
-		setComplete(true)
+			const result = await submitContactForm({
+				name: formData["name"],
+				email: formData["email"],
+				message: formData["message"],
+			})
+
+			if (!result.success) {
+				throw new Error(result.error)
+			}
+
+			setComplete(true)
+			PlayEmailSentSound()
+			toast({
+				title: "Success!",
+				description:
+					"Message sent successfully! I'll get back to you soon.",
+				variant: "default",
+				className: "bg-black border-zinc-950 text-white",
+			})
+
+			setTimeout(() => {
+				onClose()
+			}, 2000)
+		} catch (err) {
+			console.error("Error submitting form:", err)
+			setError(
+				err instanceof Error ? err.message : "Failed to send message"
+			)
+			toast({
+				title: "Error",
+				description:
+					err instanceof Error
+						? err.message
+						: "Failed to send message",
+				variant: "destructive",
+				className: "bg-red-500 text-white border-red-600",
+			})
+		}
 	}
 
 	let audio = new Audio("/sent.mp3")
@@ -300,15 +413,17 @@ const Summary = ({ questions, setQuestions }: SummaryProps) => {
 						Restart
 					</button>
 					<button
+						ref={sendButtonRef}
 						onClick={() => {
 							handleSend()
 							PlayEmailSentSound()
 						}}
-						className="px-3 py-1 text-base hover:opacity-90 transition-opacity rounded bg-teal-500 text-white">
+						className="px-3 py-1 text-base hover:opacity-90 transition-opacity rounded bg-teal-500 text-white focus:ring-2 focus:ring-teal-400 focus:outline-none">
 						Send it!
 					</button>
 				</div>
 			)}
+			{error && <p className="text-red-500 my-2">{error}</p>}
 		</>
 	)
 }
@@ -322,65 +437,95 @@ const CurLine = ({
 	command,
 	handleSubmitLine,
 	containerRef,
-}: CurrentLineProps) => {
-	const scrollToBottom = () => {
-		if (containerRef.current) {
-			containerRef.current.scrollTop = containerRef.current.scrollHeight
+	currentQuestion,
+	questions,
+	setQuestions,
+}: CurrentLineProps & {
+	questions: QuestionType[]
+	setQuestions: Dispatch<SetStateAction<QuestionType[]>>
+}) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		clearErrors,
+		setError,
+	} = useForm({
+		mode: "onChange",
+		defaultValues: {
+			[command]: "",
+		},
+	})
+
+	const onSubmit = async (data: any) => {
+		console.log("Submitting:", { text, command, data })
+		const validationResult =
+			await currentQuestion.validation.safeParseAsync(text)
+		console.log("Validation result:", validationResult)
+
+		if (validationResult.success) {
+			const success = handleSubmitLine(text, currentQuestion)
+			if (success) {
+				setText("")
+				clearErrors()
+			}
+		} else {
+			// Display validation error using setError
+			const errorMessage =
+				validationResult.error.errors[0]?.message || "Invalid input"
+			setError(command, {
+				type: "validation",
+				message: errorMessage,
+			})
 		}
 	}
 
-	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		handleSubmitLine(text)
-		setText("")
-		setTimeout(() => {
-			scrollToBottom()
-		}, 0)
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Backspace" && text === "") {
+			e.preventDefault()
+			// Find previous question
+			const currentIndex = questions.findIndex(
+				(q) => q.key === currentQuestion.key
+			)
+			if (currentIndex > 0) {
+				const updatedQuestions = [...questions]
+				updatedQuestions[currentIndex - 1].complete = false
+				updatedQuestions[currentIndex - 1].value = ""
+				setQuestions(updatedQuestions)
+			}
+		}
 	}
-
-	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
-		setText(e.target.value)
-		scrollToBottom()
-	}
-
-	useEffect(() => {
-		return () => setFocused(false)
-	}, [])
 
 	return (
 		<>
-			<form onSubmit={onSubmit}>
-				<input
-					ref={inputRef}
-					onChange={onChange}
-					value={text}
-					type="text"
-					className="sr-only"
-					autoComplete="off"
-					onFocus={() => setFocused(true)}
-					onBlur={() => setFocused(false)}
-				/>
-			</form>
-			<p>
-				<span className="text-emerald-400">➜</span>{" "}
-				<span className="text-cyan-300">~</span>{" "}
-				{command && (
-					<span className="opacity-50">Enter {command}: </span>
-				)}
-				{text}
-				{focused && (
-					<motion.span
-						animate={{ opacity: [1, 1, 0, 0] }}
-						transition={{
-							repeat: Infinity,
-							duration: 1,
-							ease: "linear",
-							times: [0, 0.5, 0.5, 1],
+			{errors[command] && (
+				<p className="text-red-500 text-sm mb-2">
+					⚠️ {errors[command]?.message?.toString()}
+				</p>
+			)}
+			<form
+				onSubmit={(e) => {
+					e.preventDefault()
+					handleSubmit(onSubmit)(e)
+				}}>
+				<div className="flex items-center">
+					<span className="text-green-500">➜</span>
+					<span className="text-blue-500 ml-2">{command}</span>
+					<input
+						{...register(command)}
+						ref={(e) => {
+							register(command).ref(e)
+							inputRef.current = e
 						}}
-						className="inline-block w-2 h-5 bg-slate-400 translate-y-1 ml-0.5"
+						className="flex-1 ml-2 bg-transparent outline-none [&:-webkit-autofill]:[-webkit-text-fill-color:white] [&:-webkit-autofill]:[transition-delay:9999s] selection:bg-teal-400/50"
+						value={text}
+						onChange={(e) => setText(e.target.value)}
+						onKeyDown={handleKeyDown}
+						onFocus={() => setFocused(true)}
+						onBlur={() => setFocused(false)}
 					/>
-				)}
-			</p>
+				</div>
+			</form>
 		</>
 	)
 }
@@ -393,24 +538,26 @@ const QUESTIONS: QuestionType[] = [
 		text: "To start, could you give me ",
 		postfix: "your email?",
 		complete: false,
+		validation: z.string().email("Invalid email address"),
 		value: "",
-		// error: errors.email?.message,
 	},
 	{
 		key: "name",
 		text: "Awesome! And what's ",
-		postfix: "your name?",
+		postfix: "your full name? (First Last)",
 		complete: false,
+		validation: nameValidation,
 		value: "",
-		// error: errors.name?.message,
 	},
 	{
 		key: "message",
 		text: "Perfect, and ",
 		postfix: "how can I help you?",
 		complete: false,
+		validation: z
+			.string()
+			.min(10, "Message must be at least 10 characters"),
 		value: "",
-		// error: errors.message?.message,
 	},
 ]
 
@@ -421,8 +568,9 @@ interface CurrentLineProps {
 	setFocused: Dispatch<SetStateAction<boolean>>
 	inputRef: MutableRefObject<HTMLInputElement | null>
 	command: string
-	handleSubmitLine: Function
+	handleSubmitLine: (value: string, currentQuestion: QuestionType) => boolean
 	containerRef: MutableRefObject<HTMLDivElement | null>
+	currentQuestion: QuestionType
 }
 
 type QuestionType = {
@@ -430,12 +578,15 @@ type QuestionType = {
 	text: string
 	postfix?: string
 	complete: boolean
+	validation: z.ZodType
 	value: string
 }
 
 interface TerminalBodyProps {
 	containerRef: MutableRefObject<HTMLDivElement | null>
 	inputRef: MutableRefObject<HTMLInputElement | null>
+	onClose: () => void
+	onMinimize: () => void
 }
 
 interface PreviousQuestionProps {
@@ -445,6 +596,7 @@ interface PreviousQuestionProps {
 interface SummaryProps {
 	questions: QuestionType[]
 	setQuestions: Dispatch<SetStateAction<QuestionType[]>>
+	onClose: () => void
 }
 
 interface CurrentQuestionProps {
