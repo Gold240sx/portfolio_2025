@@ -13,3 +13,12 @@ Working on
 
 - withSWR [link](https://swr.vercel.app/) to handle data fetching, revalidation, and cache invalidation for the form actions.
 - TRPC [link](https://trpc.io/) for server-side data fetching.
+
+add these later once I re-add payload to the project:
+"@payloadcms/db-postgres": "^3.11.0",
+"@payloadcms/email-resend": "^3.4.0",
+"@payloadcms/next": "latest",
+"@payloadcms/payload-cloud": "latest",
+"@payloadcms/richtext-lexical": "latest",
+"@payloadcms/storage-s3": "^3.4.0",
+"@payloadcms/storage-uploadthing": "^3.4.0",

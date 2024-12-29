@@ -1,5 +1,5 @@
 import { withSentryConfig } from "@sentry/nextjs"
-import { withPayload } from "@payloadcms/next/withPayload"
+// import { withPayload } from "@payloadcms/next/withPayload"
 // import { createMDX } from "fumadocs-mdx/next"
 // const withMDX = createMDX()
 
@@ -14,7 +14,7 @@ const nextConfig = {
 	},
 }
 
-export default withSentryConfig(withPayload(nextConfig), {
+export default withSentryConfig(nextConfig, {
 	// For all available options, see:
 	// https://github.com/getsentry/sentry-webpack-plugin#options
 
