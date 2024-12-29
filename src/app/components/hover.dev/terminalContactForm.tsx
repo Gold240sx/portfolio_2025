@@ -10,6 +10,7 @@ import {
 	useEffect,
 	useRef,
 	useState,
+	useCallback,
 } from "react"
 import * as z from "zod"
 import { useForm } from "react-hook-form"
@@ -99,29 +100,38 @@ const TerminalHeader = ({
 	setIsMaximized: Dispatch<SetStateAction<boolean>>
 	setIsMinimized: Dispatch<SetStateAction<boolean>>
 }) => {
+	// Memoize handlers
+	const handleClose = useCallback(() => {
+		onClose()
+		setIsMinimized(false)
+		setIsMaximized(false)
+	}, [onClose, setIsMinimized, setIsMaximized])
+
+	const handleMinimize = useCallback(() => {
+		setIsMinimized(true)
+		onClose()
+	}, [setIsMinimized, onClose])
+
+	const handleMaximize = useCallback(() => {
+		setIsMaximized(true)
+	}, [setIsMaximized])
+
 	return (
 		<div className="w-auto p-3 bg-zinc-900 flex items-center gap-1 sticky top-0 rounded-t-xl overflow-hidden border-t-zinc-800 border-t">
 			<div className="flex gap-1 group">
 				<div
 					className="w-3 h-3 rounded-full bg-red-500 cursor-pointer"
-					onClick={() => {
-						onClose()
-						setIsMinimized(false)
-						setIsMaximized(false)
-					}}>
+					onClick={handleClose}>
 					<CgClose className="text-black/50 w-3 h-3 stroke-0.5 hidden group-hover:block" />
 				</div>
 				<div
 					className="w-3 h-3 rounded-full bg-yellow-500 cursor-pointer"
-					onClick={() => {
-						setIsMinimized(true)
-						onClose()
-					}}>
+					onClick={handleMinimize}>
 					<AiOutlineMinus className="text-black/50 w-3 h-3 stroke-2 hidden group-hover:block" />
 				</div>
 				<div
 					className="w-3 h-3 rounded-full bg-green-500 cursor-pointer"
-					onClick={() => setIsMaximized(true)}>
+					onClick={handleMaximize}>
 					<CgExpand className="text-black/50 w-3 h-3 rotate-90 stroke-0.5 hidden group-hover:block" />
 				</div>
 			</div>
