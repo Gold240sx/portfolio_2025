@@ -1,8 +1,6 @@
 "use client"
 
-// on their website, known as "Vanish Text"
-
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { motion } from "framer-motion"
 
 const ONE_SECOND = 1000
@@ -16,24 +14,60 @@ const TextCycle = ({
 	className: string
 }) => {
 	const [active, setActive] = useState(0)
+	const [isVisible, setIsVisible] = useState(false)
+	const componentRef = useRef<HTMLDivElement>(null)
+	const intervalRef = useRef<NodeJS.Timeout>(null)
 
 	useEffect(() => {
-		const intervalRef = setInterval(() => {
-			setActive((pv) => (pv + 1) % phrases.length)
-		}, WAIT_TIME)
+		// Create intersection observer
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				setIsVisible(entry.isIntersecting)
+			},
+			{ threshold: 0.1 } // Trigger when at least 10% of the component is visible
+		)
 
-		return () => clearInterval(intervalRef)
-	}, [phrases])
+		if (componentRef.current) {
+			observer.observe(componentRef.current)
+		}
+
+		// Cleanup observer
+		return () => {
+			observer.disconnect()
+		}
+	}, [])
+
+	useEffect(() => {
+		// Only run the interval when the component is visible
+		if (isVisible) {
+			intervalRef.current = setInterval(() => {
+				setActive((pv) => (pv + 1) % phrases.length)
+			}, WAIT_TIME)
+		} else {
+			// Clear interval when component is not visible
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current)
+			}
+		}
+	}, [isVisible, phrases])
 
 	return (
-		<div className={`relative mb-14 mt-2 w-full ${className}`}>
+		<div
+			ref={componentRef}
+			className={`relative mb-14 mt-2 w-full ${className}`}>
 			{phrases.map((phrase: string) => {
 				const isActive = phrases[active] === phrase
 				return (
 					<motion.div
 						key={phrase}
 						initial={false}
-						animate={isActive ? "active" : "inactive"}
+						animate={
+							isVisible
+								? isActive
+									? "active"
+									: "inactive"
+								: "inactive"
+						}
 						style={{
 							x: "-50%",
 						}}

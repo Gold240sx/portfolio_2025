@@ -58,12 +58,12 @@ export default async function RootLayout({
 			<body className="min-h-screen bg-black overflow-hidden h-fit w-screen bg-background antialiased relative">
 				<NextTopLoader />
 				<CSPostHogProvider>
-					{/* {isUnderDevelopment && ( */}
-					<div className="overflow-hidden h-screen w-full">
-						{/* <FuzzyOverlay /> */}
-						{children}
-					</div>
-					{/* )} */}
+					{isUnderDevelopment && (
+						<div className="overflow-hidden h-screen w-full">
+							<FuzzyOverlay />
+							{children}
+						</div>
+					)}
 					{!isUnderDevelopment && (
 						<div className="flex-grow w-full h-full bg-black text-white text-6xl font-semibold text-center place-items-center justify-center flex">
 							<RoundedDrawerNav>{children}</RoundedDrawerNav>
