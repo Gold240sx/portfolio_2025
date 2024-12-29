@@ -13,6 +13,6 @@
 //   return user || null
 // }
 
-export const getUser = () => {
+export const getUser = async () => {
 	console.log("getUser")
 }
