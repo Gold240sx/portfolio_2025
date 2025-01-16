@@ -15,7 +15,9 @@
 		"start": "cross-env NODE_OPTIONS=--no-deprecation next start",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"email": "email dev"
+		"email": "email dev",
+		"dev:https": "local-ssl-proxy --source 3001 --target 3000 --cert localhost.pem --key localhost-key.pem",
+		"devsecure": "concurrently \"next dev\" \"pnpm dev:https\""
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^3.9.1",
@@ -24,6 +26,7 @@
 		"@radix-ui/react-toast": "^1.2.4",
 		"@radix-ui/react-tooltip": "^1.1.6",
 		"@react-email/components": "0.0.29",
+		"@react-email/tailwind": "^1.0.4",
 		"@sentry/nextjs": "^8.42.0",
 		"@supabase/supabase-js": "^2.47.10",
 		"@types/mdx": "^2.0.13",

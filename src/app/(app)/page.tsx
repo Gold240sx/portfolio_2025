@@ -1,13 +1,12 @@
 "use client"
-import React, { FC, useState, Suspense, useRef } from "react"
+import React, { FC, useState, Suspense, useRef, useEffect } from "react"
 import "@/styles/styles.css"
 import Image from "next/image"
 import MainLogoInvert from "@/assets/branding/MainLogo_Invert.svg"
 import NewsBanner from "@/app/components/myComponents/Navbar/newsBanner"
 import TextCycle from "@/app/components/hover.dev/textCycle"
-import styles from "./styles/bubble.module.css"
 import Modal from "@/components/Modal"
-import { BsFillGrid3X3GapFill } from "react-icons/bs"
+import { BsFillGrid3X3GapFill, BsSpotify } from "react-icons/bs"
 import { Button } from "@/components/shadcn/button"
 import { ArrowRight, Mail } from "lucide-react"
 import {
@@ -18,16 +17,44 @@ import {
 } from "@/components/shadcn/tooltip"
 import Socials from "../components/myComponents/Footer/socials"
 import Loading from "./loading"
+import { useSearchParams } from "next/navigation"
+import WebPlayback from "../../components/WebPlayback"
 
 const Home: FC = () => {
 	const [isOpen, setIsOpen] = useState<boolean>(false)
 	const [isMinimized, setIsMinimized] = useState<boolean>(false)
+	const [isLoggedIn, setIsLoggedIn] = useState(false)
+	const [showPlayer, setShowPlayer] = useState(false)
 	const onClose = () => setIsOpen(false)
 	const launchpadButtonRef = useRef<HTMLButtonElement>(null)
+	const searchParams = useSearchParams()
+	const token = searchParams.get("token")
+	const playlistId = "4xyCnJzHbTWO4pvVjErj0D"
+
+	useEffect(() => {
+		// Check if we have a token
+		if (token) {
+			setIsLoggedIn(true)
+		}
+	}, [token])
+
+	const handleLogin = () => {
+		window.location.href = "/api/auth/spotify"
+	}
+
+	const handlePlayerClick = () => {
+		if (token) {
+			// If user is authenticated, just show the player
+			setShowPlayer(true)
+		} else {
+			// If not authenticated, redirect to Spotify auth
+			window.location.href = "/api/auth/spotify"
+		}
+	}
 
 	return (
 		<Suspense fallback={<Loading />}>
-			<div className="flex flex-col h-full">
+			<div className="flex flex-col min-h-screen overflow-auto">
 				<NewsBanner
 					props={{
 						newsBanner: {
@@ -40,56 +67,64 @@ const Home: FC = () => {
 						},
 					}}
 				/>
-				<div className="relative h-full flex-col bg-neutral-950 text-white text-6xl font-semibold text-center place-items-center justify-center flex">
+				<main className="flex-1 flex flex-col items-center justify-center px-4 py-8 pb-32 bg-neutral-950">
 					<Image
 						alt="Main Logo"
-						className="animate-pulse w-48"
+						className="animate-pulse w-48 mb-10"
 						src={MainLogoInvert}
 						width={200}
 						height={200}
 					/>
-					<div className="grid flex-wrap mt-10 z-50 cursor-pointer text-3xl text-zinc-600 space-y-3 pb-6">
-						<h2 className="hoverText text-center text-5xl font-thin text-teal-300 pb-2">
-							{"MichaelMartell.com"
-								.split("")
-								.map((child, idx) => (
+					<div className="grid gap-6 text-center mb-8">
+						<h2 className="text-4xl md:text-5xl font-thin text-teal-300">
+							{Array.from("MichaelMartell.com").map(
+								(char, idx) => (
 									<span
-										className={styles.hoverText}
-										key={idx}>
-										{child}
+										key={idx}
+										className="inline-block hover:text-white hover:-translate-y-1 transition-all duration-200 ease-in-out cursor-pointer">
+										{char}
 									</span>
-								))}
+								)
+							)}
 						</h2>
-						COMING SOON!
+						<TextCycle
+							className="text-3xl text-zinc-800 uppercase"
+							phrases={[
+								"React Developer",
+								"Swift Developer",
+								"Designer and Artist",
+							]}
+						/>
 					</div>
-					<TextCycle
-						className="text-3xl !text-zinc-800 uppercase"
-						phrases={[
-							"React Developer",
-							"Swift Developer",
-							"Designer and Artist",
-						]}
-					/>
-					{!isMinimized && (
-						<Button
-							className="group text-lg bg-zinc-900 hover:bg-zinc-800"
-							variant="secondary"
-							onClick={() => setIsOpen(true)}>
-							<Mail
-								className="-ms-1 me-2 opacity-60 font-semibold text-lg"
-								size={16}
-								strokeWidth={3}
-								aria-hidden="true"
-							/>
-							Contact Me
-							<ArrowRight
-								className="-me-1 ms-2 opacity-60 transition-transform group-hover:translate-x-0.5 !group-hover:translate-y-0.5 font-semibold text-lg"
-								size={9}
-								strokeWidth={3}
-								aria-hidden="true"
-							/>
-						</Button>
-					)}
+					<div className="flex flex-col items-center gap-8">
+						<div className="flex flex-col sm:flex-row gap-4 items-center">
+							{!isMinimized && (
+								<Button
+									className="group text-lg text-white bg-zinc-900 hover:bg-zinc-800"
+									variant="secondary"
+									onClick={() => setIsOpen(true)}>
+									<Mail
+										className="-ms-1 me-2 opacity-60"
+										size={16}
+									/>
+									Contact Me
+									<ArrowRight
+										className="-me-1 ms-2 opacity-60 transition-transform group-hover:translate-x-0.5"
+										size={9}
+									/>
+								</Button>
+							)}
+							<Button
+								className="group text-lg bg-[#1DB954] hover:bg-[#1ed760] text-black"
+								onClick={handlePlayerClick}>
+								<BsSpotify className="-ms-1 me-2" size={20} />
+								My Recent Favorites
+							</Button>
+						</div>
+						<div className="flex flex-wrap justify-center gap-4">
+							<Socials />
+						</div>
+					</div>
 					{isMinimized && (
 						<TooltipProvider>
 							<Tooltip delayDuration={400}>
@@ -102,12 +137,22 @@ const Home: FC = () => {
 									</button>
 								</TooltipTrigger>
 								<TooltipContent
-									className="dark rounded-[8px] py-2 text-lg tracking-wider text-white font-light border-black"
+									className="dark rounded-[8px] py-2 text-lg tracking-wider text-white font-light border-black bg-neutral-900"
 									showArrow={true}>
 									Launchpad
 								</TooltipContent>
 							</Tooltip>
 						</TooltipProvider>
+					)}
+				</main>
+				<div className="fixed bottom-0 w-full">
+					{token && showPlayer && (
+						<div className="absolute bottom-0 left-0 right-0">
+							<WebPlayback
+								token={token}
+								playlistId={playlistId}
+							/>
+						</div>
 					)}
 				</div>
 				<Modal
@@ -118,9 +163,6 @@ const Home: FC = () => {
 					setIsMinimized={setIsMinimized}
 					launchpadButtonRef={launchpadButtonRef}
 				/>
-				<div className="absolute bottom-0 right-4 p-4 flex gap-4 text-white text-xs">
-					<Socials />
-				</div>
 			</div>
 		</Suspense>
 	)

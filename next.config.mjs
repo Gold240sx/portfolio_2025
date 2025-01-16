@@ -7,6 +7,19 @@ const nextConfig = {
 	experimental: {
 		serverActions: true,
 	},
+	async headers() {
+		return [
+			{
+				source: "/:path*",
+				headers: [
+					{
+						key: "Content-Security-Policy",
+						value: "frame-ancestors 'self' https://sdk.scdn.co",
+					},
+				],
+			},
+		]
+	},
 }
 
 export default withSentryConfig(nextConfig, {

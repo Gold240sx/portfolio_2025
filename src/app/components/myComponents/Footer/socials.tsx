@@ -93,7 +93,7 @@ const Socials = () => {
 							</a>
 						</TooltipTrigger>
 						<TooltipContent
-							className="dark rounded-[8px] py-2 text-lg tracking-wider text-white font-light border-black"
+							className="dark rounded-[8px] bg-neutral-900 py-2 text-lg tracking-wider text-white font-light border-black"
 							showArrow={true}>
 							{item.name}
 						</TooltipContent>
